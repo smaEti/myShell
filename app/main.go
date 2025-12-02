@@ -58,8 +58,7 @@ func handleTypeCommand(command string) {
 	for _, path := range paths {
 		files, err := os.ReadDir(path)
 		if err != nil {
-			fmt.Println("An error is eccoured in reading PATH directories", err)
-			os.Exit(2)
+			continue
 		}
 
 		index := sort.Search(len(files), func(i int) bool {
