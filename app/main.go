@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-var builtIn = []string{"type", "echo", "exit"}
+var builtIn = []string{"type", "echo", "exit", "pwd"}
 
 func main() {
 
