@@ -34,7 +34,7 @@ func main() {
 
 		executableFile := findExecutable(commandArgs[0])
 		if executableFile != "" {
-			cmd := exec.Command(executableFile, commandArgs[1:]...)
+			cmd := exec.Command(commandArgs[0], commandArgs[1:]...)
 
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
