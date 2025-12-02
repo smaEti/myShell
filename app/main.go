@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"slices"
+	"sort"
 	"strings"
 )
 
@@ -36,7 +38,7 @@ func readingCommand() ([]string, string) {
 	commandWithEndLine, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	command := commandWithEndLine[:len(commandWithEndLine)-1]
 	if err != nil {
-		fmt.Println("An error is eccoured")
+		fmt.Println("An error is eccoured in reading the commandline", err)
 		os.Exit(2)
 	}
 	command = strings.TrimSpace(command)
@@ -50,5 +52,25 @@ func handleTypeCommand(command string) {
 		fmt.Println(command + " is a shell builtin")
 		return
 	}
-	println(command + ": not found")
+	pathString := os.Getenv("PATH")
+	paths := strings.Split(pathString, ":")
+
+	for _, path := range paths {
+		files, err := os.ReadDir(path)
+		if err != nil {
+			fmt.Println("An error is eccoured in reading PATH directories", err)
+			os.Exit(2)
+		}
+
+		index := sort.Search(len(files), func(i int) bool {
+			return files[i].Name() >= command
+		})
+
+		if index < len(files) && files[index].Name() == command {
+			fullPath := filepath.Join(path, command)
+			fmt.Println(command + " is " + fullPath)
+			return
+		}
+	}
+	fmt.Println(command + ": not found")
 }
