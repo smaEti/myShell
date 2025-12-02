@@ -121,7 +121,7 @@ func handleBuiltInCommands(command string, commandArgs []string) {
 	if commandArgs[0] == "cd" {
 		err := os.Chdir(commandArgs[1])
 		if err != nil {
-			fmt.Println("cd: " + commandArgs[1] + " No such file or directory")
+			fmt.Println("cd: " + commandArgs[1] + ": No such file or directory")
 		}
 	}
 	if commandArgs[0] == "pwd" {
