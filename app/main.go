@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -13,13 +14,20 @@ func main() {
 		fmt.Print("$ ")
 		commandArgs, command := readingCommand()
 
+		if commandArgs[0] == "type" {
+			handleTypeCommand(commandArgs[1])
+			continue
+		}
+
 		if commandArgs[0] == "echo" {
 			fmt.Println(command[5:])
 			continue
 		}
+
 		if command == "exit" {
 			os.Exit(0)
 		}
+
 		fmt.Println(command + ": command not found")
 	}
 }
@@ -34,4 +42,11 @@ func readingCommand() ([]string, string) {
 	command = strings.TrimSpace(command)
 	commandFields := strings.Fields(command)
 	return commandFields, command
+}
+
+func handleTypeCommand(command string) {
+	builtIn := []string{"type", "echo", "exit"}
+	if slices.Contains(builtIn, command) {
+		fmt.Println(command + " is a shell builtin")
+	}
 }
