@@ -11,29 +11,16 @@ import (
 	"strings"
 )
 
+var builtIn = []string{"type", "echo", "exit"}
+
 func main() {
 
 	for true {
 		fmt.Print("$ ")
 		commandArgs, command := readingCommand()
-
-		if commandArgs[0] == "pwd" {
-			handlePwdCommand()
+		if slices.Contains(builtIn, commandArgs[0]) {
+			handleBuiltInCommands(command, commandArgs)
 			continue
-		}
-
-		if commandArgs[0] == "type" {
-			handleTypeCommand(commandArgs[1])
-			continue
-		}
-
-		if commandArgs[0] == "echo" {
-			fmt.Println(command[5:])
-			continue
-		}
-
-		if command == "exit" {
-			os.Exit(0)
 		}
 
 		executableFile := findExecutable(commandArgs[0])
@@ -49,8 +36,6 @@ func main() {
 			fmt.Println(commandArgs[0] + ": command not found")
 			continue
 		}
-
-		fmt.Println(command + ": command not found")
 	}
 }
 
@@ -67,7 +52,6 @@ func readingCommand() ([]string, string) {
 }
 
 func handleTypeCommand(command string) {
-	builtIn := []string{"type", "echo", "exit"}
 	if slices.Contains(builtIn, command) {
 		fmt.Println(command + " is a shell builtin")
 		return
@@ -131,4 +115,21 @@ func handlePwdCommand() {
 		os.Exit(2)
 	}
 	fmt.Println(pwd)
+}
+func handleBuiltInCommands(command string, commandArgs []string) {
+	if commandArgs[0] == "pwd" {
+		handlePwdCommand()
+	}
+
+	if commandArgs[0] == "type" {
+		handleTypeCommand(commandArgs[1])
+	}
+
+	if commandArgs[0] == "echo" {
+		fmt.Println(command[5:])
+	}
+
+	if command == "exit" {
+		os.Exit(0)
+	}
 }
