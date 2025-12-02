@@ -119,6 +119,9 @@ func handlePwdCommand() {
 }
 func handleBuiltInCommands(command string, commandArgs []string) {
 	if commandArgs[0] == "cd" {
+		if commandArgs[1] == "~" {
+			commandArgs[1] = os.Getenv("HOME")
+		}
 		err := os.Chdir(commandArgs[1])
 		if err != nil {
 			fmt.Println("cd: " + commandArgs[1] + ": No such file or directory")
