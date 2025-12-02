@@ -10,12 +10,16 @@ func main() {
 	for true {
 
 		fmt.Print("$ ")
-		command, err := bufio.NewReader(os.Stdin).ReadString('\n')
 
+		commandWithEndLine, err := bufio.NewReader(os.Stdin).ReadString('\n')
+		command := commandWithEndLine[:len(commandWithEndLine)-1]
 		if err != nil {
 			fmt.Println("An error is eccoured")
 		}
 
-		fmt.Println(command[:len(command)-1] + ": command not found")
+		if command == "exit" {
+			os.Exit(0)
+		}
+		fmt.Println(command + ": command not found")
 	}
 }
