@@ -6,17 +6,21 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"slices"
 	"sort"
 	"strings"
 )
 
 func main() {
-	for true {
 
+	for true {
 		fmt.Print("$ ")
 		commandArgs, command := readingCommand()
+
+		if commandArgs[0] == "pwd" {
+			handlePwdCommand()
+			continue
+		}
 
 		if commandArgs[0] == "type" {
 			handleTypeCommand(commandArgs[1])
@@ -93,14 +97,6 @@ func isExecutable(path string) bool {
 		return true
 	}
 
-	if runtime.GOOS == "windows" {
-		ext := strings.ToLower(filepath.Ext(path))
-		switch ext {
-		case ".exe", ".bat", ".cmd", ".com", ".ps1":
-			return true
-		}
-	}
-
 	return false
 }
 
@@ -127,4 +123,12 @@ func findExecutable(command string) string {
 		}
 	}
 	return ""
+}
+func handlePwdCommand() {
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("An error is eccoured in reading the commandline", err)
+		os.Exit(2)
+	}
+	fmt.Println(pwd)
 }
