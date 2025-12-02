@@ -14,7 +14,7 @@ func main() {
 		commandArgs, command := readingCommand()
 
 		if commandArgs[0] == "echo" {
-			fmt.Println(command[4:])
+			fmt.Println(command[5:])
 			continue
 		}
 		if command == "exit" {
