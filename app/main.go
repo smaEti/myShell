@@ -48,5 +48,7 @@ func handleTypeCommand(command string) {
 	builtIn := []string{"type", "echo", "exit"}
 	if slices.Contains(builtIn, command) {
 		fmt.Println(command + " is a shell builtin")
+		return
 	}
+	println(command + ": not found")
 }
