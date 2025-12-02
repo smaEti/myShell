@@ -43,6 +43,7 @@ func main() {
 			continue
 		} else {
 			fmt.Println(commandArgs[0] + ": command not found")
+			continue
 		}
 
 		fmt.Println(command + ": command not found")
