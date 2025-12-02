@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"slices"
@@ -31,6 +32,19 @@ func main() {
 			os.Exit(0)
 		}
 
+		executableFile := findExecutable(commandArgs[0])
+		if executableFile != "" {
+			cmd := exec.Command(executableFile, commandArgs[1:]...)
+
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			cmd.Stdin = os.Stdin
+			cmd.Run()
+			continue
+		} else {
+			fmt.Println(commandArgs[0] + ": command not found")
+		}
+
 		fmt.Println(command + ": command not found")
 	}
 }
@@ -53,32 +67,16 @@ func handleTypeCommand(command string) {
 		fmt.Println(command + " is a shell builtin")
 		return
 	}
-	pathString := os.Getenv("PATH")
-	paths := strings.Split(pathString, string(os.PathListSeparator))
-
-	for _, path := range paths {
-		files, err := os.ReadDir(path)
-		if err != nil {
-			continue
-		}
-
-		index := sort.Search(len(files), func(i int) bool {
-			return files[i].Name() >= command
-		})
-
-		if index < len(files) && files[index].Name() == command {
-			fullPath := filepath.Join(path, command)
-			isFileExecutable := IsExecutable(fullPath)
-			if isFileExecutable {
-				fmt.Println(command + " is " + fullPath)
-				return
-			}
-		}
+	//locate executables
+	file := findExecutable(command)
+	if file != "" {
+		fmt.Println(command + " is " + file)
+		return
 	}
 	fmt.Println(command + ": not found")
 }
 
-func IsExecutable(path string) bool {
+func isExecutable(path string) bool {
 	info, err := os.Stat(path)
 	if err != nil {
 		return false
@@ -103,4 +101,29 @@ func IsExecutable(path string) bool {
 	}
 
 	return false
+}
+
+func findExecutable(command string) string {
+	pathString := os.Getenv("PATH")
+	paths := strings.Split(pathString, string(os.PathListSeparator))
+
+	for _, path := range paths {
+		files, err := os.ReadDir(path)
+		if err != nil {
+			continue
+		}
+
+		index := sort.Search(len(files), func(i int) bool {
+			return files[i].Name() >= command
+		})
+
+		if index < len(files) && files[index].Name() == command {
+			fullPath := filepath.Join(path, command)
+			isFileExecutable := isExecutable(fullPath)
+			if isFileExecutable {
+				return fullPath
+			}
+		}
+	}
+	return ""
 }
