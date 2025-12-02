@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"sort"
 	"strings"
@@ -53,7 +54,7 @@ func handleTypeCommand(command string) {
 		return
 	}
 	pathString := os.Getenv("PATH")
-	paths := strings.Split(pathString, ":")
+	paths := strings.Split(pathString, string(os.PathListSeparator))
 
 	for _, path := range paths {
 		files, err := os.ReadDir(path)
@@ -67,9 +68,39 @@ func handleTypeCommand(command string) {
 
 		if index < len(files) && files[index].Name() == command {
 			fullPath := filepath.Join(path, command)
-			fmt.Println(command + " is " + fullPath)
-			return
+			isFileExecutable := IsExecutable(fullPath)
+			if isFileExecutable {
+				fmt.Println(command + " is " + fullPath)
+				return
+			}
 		}
 	}
 	fmt.Println(command + ": not found")
+}
+
+func IsExecutable(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	if info.IsDir() {
+		return false
+	}
+
+	mode := info.Mode()
+
+	if mode&0111 != 0 {
+		return true
+	}
+
+	if runtime.GOOS == "windows" {
+		ext := strings.ToLower(filepath.Ext(path))
+		switch ext {
+		case ".exe", ".bat", ".cmd", ".com", ".ps1":
+			return true
+		}
+	}
+
+	return false
 }
