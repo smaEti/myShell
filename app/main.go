@@ -9,13 +9,14 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"unicode"
 )
 
 var builtIn = []string{"type", "echo", "exit", "pwd", "cd"}
 
 func main() {
 
-	for true {
+	for {
 		fmt.Print("$ ")
 		commandArgs, command := readingCommand()
 		if slices.Contains(builtIn, commandArgs[0]) {
@@ -47,9 +48,41 @@ func readingCommand() ([]string, string) {
 		os.Exit(2)
 	}
 	command = strings.TrimSpace(command)
-	commandFields := strings.Fields(command)
 
-	return commandFields, command
+	inQuotes := false
+	var quoteChar rune
+	var sb strings.Builder
+	var result []string
+	for _, r := range command {
+
+		switch {
+		case r == '\'' || r == '"':
+			if inQuotes {
+				if r == quoteChar {
+					inQuotes = false
+				} else {
+					sb.WriteRune(r)
+				}
+			} else {
+				inQuotes = true
+				quoteChar = r
+			}
+
+		case unicode.IsSpace(r):
+			if inQuotes {
+				sb.WriteRune(r)
+			} else if sb.Len() > 0 {
+				result = append(result, sb.String())
+				sb.Reset()
+			}
+		default:
+			sb.WriteRune(r)
+		}
+	}
+	if sb.Len() > 0 {
+		result = append(result, sb.String())
+	}
+	return result, command
 }
 
 func handleTypeCommand(command string) {
@@ -126,6 +159,12 @@ func handleCdCommand(commandArgs []string) {
 		fmt.Println("cd: " + commandArgs[1] + ": No such file or directory")
 	}
 }
+func handleEchoCommand(commandArgs []string) {
+	for _, arg := range commandArgs {
+		fmt.Print(arg + " ")
+	}
+	fmt.Println()
+}
 func handleBuiltInCommands(command string, commandArgs []string) {
 	if commandArgs[0] == "cd" {
 		handleCdCommand(commandArgs)
@@ -139,8 +178,7 @@ func handleBuiltInCommands(command string, commandArgs []string) {
 	}
 
 	if commandArgs[0] == "echo" {
-		//good for now
-		fmt.Println(command[5:])
+		handleEchoCommand(commandArgs[1:])
 	}
 
 	if command == "exit" {
