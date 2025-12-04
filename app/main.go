@@ -18,9 +18,9 @@ func main() {
 
 	for {
 		fmt.Print("$ ")
-		commandArgs, command := readingCommand()
+		commandArgs := readingCommand()
 		if slices.Contains(builtIn, commandArgs[0]) {
-			handleBuiltInCommands(command, commandArgs)
+			handleBuiltInCommands(commandArgs)
 			continue
 		}
 
@@ -39,7 +39,7 @@ func main() {
 		}
 	}
 }
-func readingCommand() ([]string, string) {
+func readingCommand() []string {
 	reader := bufio.NewReader(os.Stdin)
 	commandWithEndLine, err := reader.ReadString('\n')
 	if err != nil {
@@ -110,7 +110,7 @@ func readingCommand() ([]string, string) {
 		result = append(result, sb.String())
 	}
 
-	return result, command
+	return result
 }
 
 func handleTypeCommand(command string) {
@@ -194,7 +194,7 @@ func handleEchoCommand(commandArgs []string) {
 	fmt.Println()
 
 }
-func handleBuiltInCommands(command string, commandArgs []string) {
+func handleBuiltInCommands(commandArgs []string) {
 	if commandArgs[0] == "cd" {
 		handleCdCommand(commandArgs)
 	}
@@ -210,7 +210,7 @@ func handleBuiltInCommands(command string, commandArgs []string) {
 		handleEchoCommand(commandArgs[1:])
 	}
 
-	if command == "exit" {
+	if commandArgs[0] == "exit" {
 		os.Exit(0)
 	}
 }
