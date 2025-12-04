@@ -40,6 +40,15 @@ type RedirectNode struct {
 func (n *CommandNode) Execute() error {
 	// Handle built-in commands
 	if slices.Contains(builtInCommands, n.Name) {
+		// Built-ins don't naturally consume stdin like external commands
+		// If stdin is redirected (not from terminal), drain it to prevent deadlock
+		if n.Stdin != os.Stdin {
+			// Launch background goroutine to drain stdin
+			// This prevents the writer from blocking
+			go func() {
+				io.Copy(io.Discard, n.Stdin)
+			}()
+		}
 		return executeBuiltIn(n)
 	}
 
