@@ -39,7 +39,6 @@ func main() {
 		}
 	}
 }
-
 func readingCommand() ([]string, string) {
 	reader := bufio.NewReader(os.Stdin)
 	commandWithEndLine, err := reader.ReadString('\n')
@@ -61,23 +60,23 @@ func readingCommand() ([]string, string) {
 		// Handle escape characters
 		if r == '\\' && i+1 < len(command) {
 			next := rune(command[i+1])
-			switch next {
-			case '\\': // double backslash
-				sb.WriteRune('\\')
-			case '"', '\'': // escaped quote
+
+			if inQuotes && quoteChar == '"' {
+				if next == '\\' || next == '"' {
+					sb.WriteRune(next)
+					i++
+					continue
+				}
+				sb.WriteRune(r)
+				continue
+			} else if inQuotes && quoteChar == '\'' {
+				sb.WriteRune(r)
+				continue
+			} else {
 				sb.WriteRune(next)
-			case 'n':
-				sb.WriteRune('n')
-			case 't':
-				sb.WriteRune('t')
-			case ' ':
-				sb.WriteRune(' ')
-			default:
-				// keep the backslash if it doesn't form a known escape
-				sb.WriteRune(next)
+				i++
+				continue
 			}
-			i++ // skip next char
-			continue
 		}
 
 		// Handle quoting logic
