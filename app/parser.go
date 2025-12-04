@@ -129,6 +129,6 @@ func parseCommand(tokens []Token) (Node, error) {
 // isRedirect checks if a token type is a redirect operator
 func isRedirect(t TokenType) bool {
 	return t == REDIRECT_IN || t == REDIRECT_OUT || t == REDIRECT_OUT_NUM ||
-		t == REDIRECT_APPEND || t == REDIRECT_ERR || t == REDIRECT_ERR_APPEND ||
+		t == REDIRECT_APPEND || t == REDIRECT_APPEND_NUM || t == REDIRECT_ERR || t == REDIRECT_ERR_APPEND ||
 		t == REDIRECT_ERR_OUT
 }
