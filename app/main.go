@@ -189,34 +189,6 @@ func handleCdCommand(commandArgs []string) {
 }
 func handleEchoCommand(commandArgs []string) {
 	for _, arg := range commandArgs {
-		// if strings.Contains(arg, "\\") {
-		// 	var sb strings.Builder
-		// 	for i := 0; i < len(arg); i++ {
-		// 		r := arg[i]
-
-		// 		if r != '\\' {
-		// 			sb.WriteByte(r)
-		// 			continue
-		// 		}
-
-		// 		if i+1 >= len(arg) {
-		// 			break
-		// 		}
-
-		// 		next := arg[i+1]
-		// 		if next == ' ' {
-		// 			sb.WriteByte(' ')
-		// 			i++
-		// 			continue
-		// 		}
-		// 		if next == '\\' {
-		// 			sb.WriteByte('\\')
-		// 			i++
-		// 			continue
-		// 		}
-		// 	}
-		// 	arg = sb.String()
-		// }
 		fmt.Print(arg + " ")
 	}
 	fmt.Println()
