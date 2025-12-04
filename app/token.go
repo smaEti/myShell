@@ -11,6 +11,7 @@ const (
 	REDIRECT_OUT_NUM                     // 1>
 	REDIRECT_IN                          // <
 	REDIRECT_APPEND                      // >>
+	REDIRECT_APPEND_NUM                  // 1>>
 	REDIRECT_ERR                         // 2>
 	REDIRECT_ERR_APPEND                  // 2>>
 	REDIRECT_ERR_OUT                     // &> or 2>&1
@@ -28,6 +29,7 @@ func (t Token) String() string {
 		REDIRECT_OUT:        "REDIRECT_OUT",
 		REDIRECT_IN:         "REDIRECT_IN",
 		REDIRECT_APPEND:     "REDIRECT_APPEND",
+		REDIRECT_APPEND_NUM: "REDIRECT_APPEND_NUM",
 		REDIRECT_ERR:        "REDIRECT_ERR",
 		REDIRECT_ERR_APPEND: "REDIRECT_ERR_APPEND",
 		REDIRECT_ERR_OUT:    "REDIRECT_ERR_OUT",

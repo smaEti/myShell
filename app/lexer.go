@@ -88,6 +88,8 @@ func tokenize(words []string) []Token {
 		switch word {
 		case ">>":
 			tokens = append(tokens, Token{Type: REDIRECT_APPEND, Value: word})
+		case "1>>":
+			tokens = append(tokens, Token{Type: REDIRECT_APPEND_NUM, Value: word})
 		case "2>>":
 			tokens = append(tokens, Token{Type: REDIRECT_ERR_APPEND, Value: word})
 		case "2>":

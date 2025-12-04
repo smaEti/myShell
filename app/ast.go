@@ -128,7 +128,7 @@ func (n *RedirectNode) Execute() error {
 			return err
 		}
 
-	case REDIRECT_APPEND:
+	case REDIRECT_APPEND, REDIRECT_APPEND_NUM:
 		file, err = os.OpenFile(n.Filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return fmt.Errorf("cannot open %s: %v", n.Filename, err)
