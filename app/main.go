@@ -19,7 +19,6 @@ func main() {
 	for {
 		fmt.Print("$ ")
 		commandArgs, command := readingCommand()
-		fmt.Println(commandArgs)
 		if slices.Contains(builtIn, commandArgs[0]) {
 			handleBuiltInCommands(command, commandArgs)
 			continue
