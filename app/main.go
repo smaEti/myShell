@@ -71,7 +71,7 @@ func readingCommand() ([]string, string) {
 			case 't':
 				sb.WriteRune('t')
 			case ' ':
-				sb.WriteString("  ")
+				sb.WriteRune(' ')
 			default:
 				// keep the backslash if it doesn't form a known escape
 				sb.WriteRune(next)
