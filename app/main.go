@@ -19,6 +19,7 @@ func main() {
 	for {
 		fmt.Print("$ ")
 		commandArgs, command := readingCommand()
+		fmt.Println(commandArgs)
 		if slices.Contains(builtIn, commandArgs[0]) {
 			handleBuiltInCommands(command, commandArgs)
 			continue
@@ -41,27 +42,51 @@ func main() {
 }
 
 func readingCommand() ([]string, string) {
-	commandWithEndLine, err := bufio.NewReader(os.Stdin).ReadString('\n')
-	command := commandWithEndLine[:len(commandWithEndLine)-1]
+	reader := bufio.NewReader(os.Stdin)
+	commandWithEndLine, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("An error is eccoured in reading the commandline", err)
+		fmt.Println("An error occurred while reading the command line:", err)
 		os.Exit(2)
 	}
-	command = strings.TrimSpace(command)
+
+	command := strings.TrimSpace(commandWithEndLine)
 
 	inQuotes := false
 	var quoteChar rune
 	var sb strings.Builder
 	var result []string
-	for _, r := range command {
 
+	for i := 0; i < len(command); i++ {
+		r := rune(command[i])
+
+		// Handle escape characters
+		if r == '\\' && i+1 < len(command) {
+			next := rune(command[i+1])
+			switch next {
+			case '\\': // double backslash
+				sb.WriteRune('\\')
+			case '"', '\'': // escaped quote
+				sb.WriteRune(next)
+			case 'n':
+				sb.WriteRune('\n')
+			case 't':
+				sb.WriteRune('\t')
+			default:
+				// keep the backslash if it doesn't form a known escape
+				sb.WriteRune(next)
+			}
+			i++ // skip next char
+			continue
+		}
+
+		// Handle quoting logic
 		switch {
 		case r == '\'' || r == '"':
 			if inQuotes {
 				if r == quoteChar {
-					inQuotes = false
+					inQuotes = false // closing quote
 				} else {
-					sb.WriteRune(r)
+					sb.WriteRune(r) // quote inside other type of quotes
 				}
 			} else {
 				inQuotes = true
@@ -75,13 +100,16 @@ func readingCommand() ([]string, string) {
 				result = append(result, sb.String())
 				sb.Reset()
 			}
+
 		default:
 			sb.WriteRune(r)
 		}
 	}
+
 	if sb.Len() > 0 {
 		result = append(result, sb.String())
 	}
+
 	return result, command
 }
 
@@ -161,9 +189,38 @@ func handleCdCommand(commandArgs []string) {
 }
 func handleEchoCommand(commandArgs []string) {
 	for _, arg := range commandArgs {
+		if strings.Contains(arg, "\\") {
+			var sb strings.Builder
+			for i := 0; i < len(arg); i++ {
+				r := arg[i]
+
+				if r != '\\' {
+					sb.WriteByte(r)
+					continue
+				}
+
+				if i+1 >= len(arg) {
+					break
+				}
+
+				next := arg[i+1]
+				if next == ' ' {
+					sb.WriteByte(' ')
+					i++
+					continue
+				}
+				if next == '\\' {
+					sb.WriteByte('\\')
+					i++
+					continue
+				}
+			}
+			arg = sb.String()
+		}
 		fmt.Print(arg + " ")
 	}
 	fmt.Println()
+
 }
 func handleBuiltInCommands(command string, commandArgs []string) {
 	if commandArgs[0] == "cd" {
