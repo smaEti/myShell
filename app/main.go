@@ -19,6 +19,7 @@ func main() {
 	for {
 		fmt.Print("$ ")
 		commandArgs, command := readingCommand()
+		fmt.Println(commandArgs)
 		if slices.Contains(builtIn, commandArgs[0]) {
 			handleBuiltInCommands(command, commandArgs)
 			continue
@@ -67,9 +68,11 @@ func readingCommand() ([]string, string) {
 			case '"', '\'': // escaped quote
 				sb.WriteRune(next)
 			case 'n':
-				sb.WriteRune('\n')
+				sb.WriteRune('n')
 			case 't':
-				sb.WriteRune('\t')
+				sb.WriteRune('t')
+			case ' ':
+				sb.WriteString("  ")
 			default:
 				// keep the backslash if it doesn't form a known escape
 				sb.WriteRune(next)
@@ -188,34 +191,34 @@ func handleCdCommand(commandArgs []string) {
 }
 func handleEchoCommand(commandArgs []string) {
 	for _, arg := range commandArgs {
-		if strings.Contains(arg, "\\") {
-			var sb strings.Builder
-			for i := 0; i < len(arg); i++ {
-				r := arg[i]
+		// if strings.Contains(arg, "\\") {
+		// 	var sb strings.Builder
+		// 	for i := 0; i < len(arg); i++ {
+		// 		r := arg[i]
 
-				if r != '\\' {
-					sb.WriteByte(r)
-					continue
-				}
+		// 		if r != '\\' {
+		// 			sb.WriteByte(r)
+		// 			continue
+		// 		}
 
-				if i+1 >= len(arg) {
-					break
-				}
+		// 		if i+1 >= len(arg) {
+		// 			break
+		// 		}
 
-				next := arg[i+1]
-				if next == ' ' {
-					sb.WriteByte(' ')
-					i++
-					continue
-				}
-				if next == '\\' {
-					sb.WriteByte('\\')
-					i++
-					continue
-				}
-			}
-			arg = sb.String()
-		}
+		// 		next := arg[i+1]
+		// 		if next == ' ' {
+		// 			sb.WriteByte(' ')
+		// 			i++
+		// 			continue
+		// 		}
+		// 		if next == '\\' {
+		// 			sb.WriteByte('\\')
+		// 			i++
+		// 			continue
+		// 		}
+		// 	}
+		// 	arg = sb.String()
+		// }
 		fmt.Print(arg + " ")
 	}
 	fmt.Println()
